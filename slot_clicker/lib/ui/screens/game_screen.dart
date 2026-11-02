@@ -69,9 +69,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                 style: Theme.of(context).textTheme.displayMedium),
             Text('x${manager.payoutMultiplier(state).toStringAsFixed(2)} payout'
                 '  •  ${perSec.toStringAsFixed(1)} auto pulls/s'),
-            const SizedBox(height: 32),
+            const SizedBox(height: 34),
             const SlotMachine(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 34),
             // TODO: replace with a draggable Lever widget (ui/widgets/lever.dart)
             FilledButton.icon(
               style: FilledButton.styleFrom(
