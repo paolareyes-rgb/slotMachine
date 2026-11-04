@@ -11,3 +11,4 @@ const List<SlotSymbol> kSymbols = [
   SlotSymbol('chest', '🧰', 4, 30),
   SlotSymbol('trident', '🔱', 1, 100), // Rare slot symbol (1), High payout (100x)
 ];
+
