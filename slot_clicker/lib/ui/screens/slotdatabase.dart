@@ -12,7 +12,7 @@ class LeaderboardDatabase {
     _database = await _initDB('leaderboard.db');
     return _database!;
   }
-
+//test
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
