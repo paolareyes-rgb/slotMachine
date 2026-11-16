@@ -75,6 +75,10 @@ class GameNotifier extends Notifier<GameState> {
         item3: result.reels[2].id,
         pointsEarned: payout,
       );
+      await SlotDatabase.instance.updatePlayerScore(
+        playerId,
+        state.money,
+      );
     }
   }
 

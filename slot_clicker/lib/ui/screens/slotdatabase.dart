@@ -61,11 +61,14 @@ class SlotDatabase {
     await db.insert('leaderboard', {'player_name': 'Michelle', 'score': 100});
   }
 
-  /// Adds a new player. Returns -1 if player name already exists.
+  /// Adds a new player and initializes their leaderboard entry.
+  /// Returns -1 if player name already exists.
   Future<int> addPlayer(String name) async {
     final db = await instance.database;
     try {
-      return await db.insert('players', {'name': name});
+      final id = await db.insert('players', {'name': name});
+      await db.insert('leaderboard', {'player_name': name, 'score': 0});
+      return id;
     } catch (e) {
       return -1;
     }
@@ -87,6 +90,33 @@ class SlotDatabase {
       'item3': item3,
       'points_earned': pointsEarned,
     });
+  }
+
+  /// Updates the player's total score on the leaderboard.
+  Future<void> updatePlayerScore(int playerId, double score) async {
+    final db = await instance.database;
+    final players = await db.query(
+      'players',
+      where: 'id = ?',
+      whereArgs: [playerId],
+    );
+
+    if (players.isNotEmpty) {
+      final playerName = players.first['name'] as String;
+      final count = await db.update(
+        'leaderboard',
+        {'score': score.toInt()},
+        where: 'player_name = ?',
+        whereArgs: [playerName],
+      );
+
+      if (count == 0) {
+        await db.insert('leaderboard', {
+          'player_name': playerName,
+          'score': score.toInt(),
+        });
+      }
+    }
   }
 
   Future<List<Map<String, Object?>>> getLeaderboard() async {
