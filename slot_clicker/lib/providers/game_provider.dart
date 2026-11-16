@@ -10,7 +10,7 @@ import '../logic/slot_engine.dart';
 import '../logic/upgrade_manager.dart';
 import '../models/game_state.dart';
 import '../services/save_service.dart';
-
+import '../ui/screens/slotdatabase.dart';
 // Overridden in main.dart
 final saveServiceProvider =
     Provider<SaveService>((ref) => throw UnimplementedError());
@@ -24,6 +24,9 @@ final lastSpinProvider = StateProvider<SpinResult?>((ref) => null);
 
 final gameProvider =
     NotifierProvider<GameNotifier, GameState>(GameNotifier.new);
+
+final currentPlayerIdProvider = StateProvider<int?>((ref) => null);
+
 
 class GameNotifier extends Notifier<GameState> {
   Timer? _timer;
@@ -45,16 +48,36 @@ class GameNotifier extends Notifier<GameState> {
     _spin();
   }
 
-  void _spin() {
+
+
+  Future<void> _spin() async {
     final result =
-        ref.read(slotEngineProvider).spin(luck: _manager.luck(state));
-    final payout = result.basePayout * _manager.payoutMultiplier(state);
+    ref.read(slotEngineProvider).spin(luck: _manager.luck(state));
+
+    final payout =
+        result.basePayout * _manager.payoutMultiplier(state);
+
     ref.read(lastSpinProvider.notifier).state = result;
+
     state = state.copyWith(
       money: state.money + payout,
       totalSpins: state.totalSpins + 1,
     );
+
+    // Save the player's updated score in SQLite.
+    final playerId = ref.read(currentPlayerIdProvider);
+
+    if (playerId != null) {
+      await SlotDatabase.instance.recordSpin(
+        playerId: playerId,
+        item1: result.reels[0].id,
+        item2: result.reels[1].id,
+        item3: result.reels[2].id,
+        pointsEarned: payout,
+      );
+    }
   }
+
 
   bool buyUpgrade(String id) {
     final next = _manager.purchase(id, state);
