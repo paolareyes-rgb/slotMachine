@@ -6,6 +6,7 @@ import '../models/game_state.dart';
 
 class SaveService {
   static const _key = 'game_save';
+  static const _playerIdKey = 'current_player_id';
   final SharedPreferences _prefs;
   SaveService(this._prefs);
 
@@ -23,4 +24,8 @@ class SaveService {
       _prefs.setString(_key, jsonEncode(state.toJson()));
 
   Future<void> wipe() => _prefs.remove(_key);
+
+  int? getPlayerId() => _prefs.getInt(_playerIdKey);
+
+  Future<void> savePlayerId(int id) => _prefs.setInt(_playerIdKey, id);
 }

@@ -26,6 +26,7 @@ class SlotDatabase {
     );
   }
 
+
   Future<void> _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE players (
