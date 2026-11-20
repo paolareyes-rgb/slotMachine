@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,6 +12,7 @@ import '../logic/upgrade_manager.dart';
 import '../models/game_state.dart';
 import '../services/save_service.dart';
 import '../ui/screens/slotdatabase.dart';
+
 // Overridden in main.dart
 final saveServiceProvider =
     Provider<SaveService>((ref) => throw UnimplementedError());
@@ -27,6 +29,8 @@ final gameProvider =
 
 final currentPlayerIdProvider = StateProvider<int?>((ref) => null);
 
+/// Manages Night (Dark) and Day (Light) theme mode.
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.dark);
 
 class GameNotifier extends Notifier<GameState> {
   Timer? _timer;
@@ -48,14 +52,11 @@ class GameNotifier extends Notifier<GameState> {
     _spin();
   }
 
-
-
   Future<void> _spin() async {
     final result =
-    ref.read(slotEngineProvider).spin(luck: _manager.luck(state));
+        ref.read(slotEngineProvider).spin(luck: _manager.luck(state));
 
-    final payout =
-        result.basePayout * _manager.payoutMultiplier(state);
+    final payout = result.basePayout * _manager.payoutMultiplier(state);
 
     ref.read(lastSpinProvider.notifier).state = result;
 
@@ -81,7 +82,6 @@ class GameNotifier extends Notifier<GameState> {
       );
     }
   }
-
 
   bool buyUpgrade(String id) {
     final next = _manager.purchase(id, state);

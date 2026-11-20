@@ -4,12 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/number_formatter.dart';
 import '../../providers/game_provider.dart';
 import '../widgets/slot_machine.dart';
+import 'player_screen.dart';
 import 'shop_screen.dart';
 import 'slotdatabase.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
   const GameScreen({super.key});
-//this is a test
+
   @override
   ConsumerState<GameScreen> createState() => _GameScreenState();
 }
@@ -18,8 +19,19 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   @override
   void initState() {
     super.initState();
-    // Welcome-back message for offline earnings.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Prompt for player registration if no player is set yet
+      if (ref.read(currentPlayerIdProvider) == null && mounted) {
+        final id = await Navigator.push<int>(
+          context,
+          MaterialPageRoute(builder: (_) => const PlayerScreen()),
+        );
+        if (id != null && mounted) {
+          ref.read(currentPlayerIdProvider.notifier).state = id;
+        }
+      }
+
+      // Welcome-back message for offline earnings.
       final earned = ref.read(offlineEarningsProvider);
       if (earned > 0 && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -37,11 +49,21 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     final state = ref.watch(gameProvider);
     final manager = ref.watch(upgradeManagerProvider);
     final perSec = manager.autoSpinsPerSecond(state);
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Slot Clicker'),
         actions: [
+          IconButton(
+            icon: Icon(isDark ? Icons.wb_sunny : Icons.nights_stay),
+            tooltip: isDark ? 'Switch to Day Mode' : 'Switch to Night Mode',
+            onPressed: () {
+              ref.read(themeModeProvider.notifier).state =
+                  isDark ? ThemeMode.light : ThemeMode.dark;
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () => Navigator.push(

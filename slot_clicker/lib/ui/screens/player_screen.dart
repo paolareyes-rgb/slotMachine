@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'slotdatabase.dart';
 
@@ -13,12 +12,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
   final nameController = TextEditingController();
 
   void startGame() async {
-    String name = nameController.text.trim();
+    final name = nameController.text.trim();
 
     if (name.isEmpty) return;
 
-    int playerId =
-    await SlotDatabase.instance.addPlayer(name);
+    final playerId = await SlotDatabase.instance.addPlayer(name);
+
+    if (!mounted) return;
 
     if (playerId == -1) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -26,8 +26,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
       );
       return;
     }
-
-    if (!mounted) return;
 
     Navigator.pop(context, playerId);
   }

@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants.dart';
 import '../../providers/game_provider.dart';
 
-/// Shows the three reels. Swap the AnimatedSwitcher for a real spinning
-/// reel animation (see TODO) when you get to polish.
+/// Shows the three reels.
 class SlotMachine extends ConsumerWidget {
   const SlotMachine({super.key});
 
