@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'player_screen.dart';
 import 'app.dart';
 import 'data/symbol_definitions.dart';
 import 'data/upgrade_definitions.dart';
@@ -28,11 +27,14 @@ Future<void> main() async {
   );
   state = state.copyWith(money: state.money + offline.earned);
 
+  final savedPlayerId = saveService.getPlayerId();
+
   runApp(ProviderScope(
     overrides: [
       saveServiceProvider.overrideWithValue(saveService),
       initialStateProvider.overrideWithValue(state),
       offlineEarningsProvider.overrideWithValue(offline.earned),
+      currentPlayerIdProvider.overrideWith((ref) => savedPlayerId),
     ],
     child: const SlotClickerApp(),
   ));

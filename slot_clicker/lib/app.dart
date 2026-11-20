@@ -26,6 +26,7 @@ class _SlotClickerAppState extends ConsumerState<SlotClickerApp>
 
     if (id != null && mounted) {
       ref.read(currentPlayerIdProvider.notifier).state = id;
+      ref.read(saveServiceProvider).savePlayerId(id);
     }
   }
 
