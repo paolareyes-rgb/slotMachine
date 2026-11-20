@@ -27,11 +27,14 @@ Future<void> main() async {
   );
   state = state.copyWith(money: state.money + offline.earned);
 
+  final savedPlayerId = saveService.getPlayerId();
+
   runApp(ProviderScope(
     overrides: [
       saveServiceProvider.overrideWithValue(saveService),
       initialStateProvider.overrideWithValue(state),
       offlineEarningsProvider.overrideWithValue(offline.earned),
+      currentPlayerIdProvider.overrideWith((ref) => savedPlayerId),
     ],
     child: const SlotClickerApp(),
   ));

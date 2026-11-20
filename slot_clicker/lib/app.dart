@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'providers/game_provider.dart';
 import 'ui/screens/game_screen.dart';
+// TODO: Make sure the files containing PlayerScreen, currentPlayerIdProvider,
+// and saveServiceProvider are imported here (if not already in game_provider.dart).
+// import 'ui/screens/player_screen.dart';
 
 class SlotClickerApp extends ConsumerStatefulWidget {
   const SlotClickerApp({super.key});
@@ -13,6 +16,21 @@ class SlotClickerApp extends ConsumerStatefulWidget {
 
 class _SlotClickerAppState extends ConsumerState<SlotClickerApp>
     with WidgetsBindingObserver {
+  // Opens the player registration screen
+  void openPlayerScreen() async {
+    final id = await Navigator.push<int>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const PlayerScreen(),
+      ),
+    );
+
+    if (id != null && mounted) {
+      ref.read(currentPlayerIdProvider.notifier).state = id;
+      ref.read(saveServiceProvider).savePlayerId(id);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
